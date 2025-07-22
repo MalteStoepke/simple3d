@@ -2,9 +2,6 @@ export function createHelpers(geometry, scene) {
     let vertexHelpers = [];
     let edgeHelpers = [];
 
-    // Clear old
-    // Note: In updateHelpers, we remove old ones before calling this.
-
     // Vertex helpers
     const vertexGeometry = new THREE.SphereGeometry(0.05, 8, 8);
     const vertexMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
