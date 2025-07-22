@@ -79,4 +79,56 @@ try {
                 selectedVertexIndex = -1;
             } else if (mode === 'edge' && selectedEdge !== null) {
                 console.log('Edge selected');
-                selectedEdge =
+                selectedEdge = null;
+            }
+        }
+    };
+    gui.add(params, 'mode', ['vertex', 'edge', 'face']).onChange(value => mode = value);
+    gui.add(params, 'extrudeDistance', -2, 2, 0.1);
+    gui.add(params, 'applyExtrude').name('Extrude');
+
+    // Mouse selection
+    function onMouseDown(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+
+        if (mode === 'face') {
+            const intersects = raycaster.intersectObject(mesh);
+            if (intersects.length > 0) {
+                selectedFaceIndex = intersects[0].faceIndex;
+                console.log('Selected face:', selectedFaceIndex);
+            }
+        } else if (mode === 'vertex') {
+            const intersects = raycaster.intersectObjects(vertexHelpers);
+            if (intersects.length > 0) {
+                selectedVertexIndex = intersects[0].object.userData.vertexIndex;
+                console.log('Selected vertex:', selectedVertexIndex);
+            }
+        } else if (mode === 'edge') {
+            const intersects = raycaster.intersectObjects(edgeHelpers);
+            if (intersects.length > 0) {
+                selectedEdge = intersects[0].object;
+                console.log('Selected edge:', selectedEdge.userData.edgeIndices);
+            }
+        }
+    }
+    window.addEventListener('mousedown', onMouseDown, false);
+
+    // Animate
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+} catch (e) {
+    logError('Error: ' + e.message);
+}
